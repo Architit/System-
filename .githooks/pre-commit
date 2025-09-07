@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Список проиндексированных файлов в коммите
+staged=$(git diff --cached --name-only)
+
+# 1) Файлы >100MB
+large=$(while read -r f; do
+  [ -f "$f" ] || continue
+  sz=$(wc -c <"$f" 2>/dev/null || echo 0)
+  if [ "$sz" -ge $((100*1024*1024)) ]; then echo "$f ($((sz/1024/1024)) MB)"; fi
+done <<<"$staged")
+
+# 2) Потенциальные секреты
+secrets=$(grep -Ei '\.(key|pem|env)$' <<<"$staged" || true)
+
+# 3) Архивы/образы без LFS
+archives=$(grep -Ei '\.(zip|7z|rar|iso|tar|gz)$' <<<"$staged" || true)
+needs_lfs=""
+if [ -n "$archives" ]; then
+  # проверим, отслеживаются ли они LFS
+  while read -r f; do
+    [ -n "$f" ] || continue
+    if ! git check-attr --all -- "$f" | grep -q 'filter: lfs'; then
+      needs_lfs+="$f"$'\n'
+    fi
+  done <<<"$archives"
+fi
+
+if [ -n "$large" ]; then
+  echo "❌ Коммит заблокирован: файлы >100MB:"
+  echo "$large"
+  echo "👉 Рекомендация: Git LFS"
+  exit 1
+fi
+
+if [ -n "$secrets" ]; then
+  echo "❌ Коммит заблокирован: потенциальные секреты:"
+  echo "$secrets"
+  exit 1
+fi
+
+if [ -n "$needs_lfs" ]; then
+  echo "❌ Коммит заблокирован: бинарные архивы без LFS:"
+  echo "$needs_lfs"
+  echo "👉 Подсказка:"
+  echo "   git lfs install"
+  echo "   git lfs track \"*.zip\" \"*.7z\" \"*.rar\" \"*.iso\" \"*.tar\" \"*.gz\""
+  echo "   git add .gitattributes && git add <файлы> && git commit -m \"chore: track binaries with LFS\""
+  exit 1
+fi
+
+exit 0
