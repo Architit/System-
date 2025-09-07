@@ -1,0 +1,39 @@
+﻿AUTOPILOT RESTORE GUIDE · ASUS (кратко)
+
+БАЗОВЫЙ ПУТЬ ПАКЕТА: D:\AUTOPILOT
+(если D: отсутствует — используйте любой несистемный диск/флешку; скрипты сами подстроятся)
+
+СТРУКТУРА:
+D:\AUTOPILOT\
+  autopilot_backup_protocol_v1.ps1
+  autopilot_post_reset_optimize.ps1
+  autopilot_repair_windows_update.cmd
+  BACKUP\  <-- сюда скрипт создаёт подпапку вида PCNAME_yyyyMMdd-HHmm
+
+ШАГИ:
+1) BACKUP (до сброса):
+   - Откройте PowerShell (Админ).
+   - Выполните:
+     Set-ExecutionPolicy Bypass -Scope Process -Force; cd D:\AUTOPILOT; .\autopilot_backup_protocol_v1.ps1 -Root "D:\AUTOPILOT"
+   - Итоговый бэкап: D:\AUTOPILOT\BACKUP\<PCNAME_yyyyMMdd-HHmm>\
+
+2) RESET (сброс Windows):
+   - Параметры: Полная переустановка (удалить всё) через "Сброс этого ПК" / облачную/локальную переустановку.
+   - Дождитесь завершения OOBE.
+
+3) RESTORE (после сброса):
+   - Скопируйте папку AUTOPILOT обратно на несистемный диск (например, D:\AUTOPILOT).
+   - Откройте PowerShell (Админ) и выполните:
+     Set-ExecutionPolicy Bypass -Scope Process -Force; cd D:\AUTOPILOT; .\autopilot_post_reset_optimize.ps1 -Root "D:\AUTOPILOT"
+   - Скрипт автоматически:
+       • установит драйверы из BACKUP\...\Drivers
+       • вернёт Wi‑Fi профили
+       • импортирует приложения (winget, если доступно)
+       • применит базовые настройки Проводника и энергоплан
+
+4) ИСПРАВЛЕНИЕ ОБНОВЛЕНИЙ (по необходимости):
+   - Запустите (Админ): D:\AUTOPILOT\autopilot_repair_windows_update.cmd
+
+ПРИМЕЧАНИЯ:
+- Бэкап пользовательских данных: BACKUP\...\UserData\ (Desktop/Documents/Downloads/Pictures/Videos/Music + Public Desktop).
+- Если бэкапов несколько, post_reset_optimize возьмёт самый свежий; конкретный можно указать ключом -BackupPath.

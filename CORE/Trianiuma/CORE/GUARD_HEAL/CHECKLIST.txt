@@ -1,0 +1,15 @@
+﻿AUTOPILOT · ASUS — ЧЕК-ЛИСТ (кратко)
+
+1) BACKUP — запустить:
+   PowerShell (Админ) →
+   Set-ExecutionPolicy Bypass -Scope Process -Force; cd D:\AUTOPILOT; .\autopilot_backup_protocol_v1.ps1 -Root "D:\AUTOPILOT"
+
+2) RESET — выполнить сброс Windows:
+   «Сброс этого ПК» → Полная переустановка (удалить всё). Дождаться OOBE.
+
+3) RESTORE — после сброса:
+   PowerShell (Админ) →
+   Set-ExecutionPolicy Bypass -Scope Process -Force; cd D:\AUTOPILOT; .\autopilot_post_reset_optimize.ps1 -Root "D:\AUTOPILOT"
+
+(опционально) Если проблемы с обновлениями:
+   Запустить D:\AUTOPILOT\autopilot_repair_windows_update.cmd (Админ).

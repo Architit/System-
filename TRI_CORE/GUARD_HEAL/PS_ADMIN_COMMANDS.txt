@@ -1,0 +1,7 @@
+﻿ГОТОВЫЕ КОМАНДЫ ДЛЯ POWERSHELL (Админ)
+
+# До сброса (Backup):
+Set-ExecutionPolicy Bypass -Scope Process -Force; cd D:\AUTOPILOT; .\autopilot_backup_protocol_v1.ps1 -Root "D:\AUTOPILOT"
+
+# После сброса (Restore/Optimize):
+Set-ExecutionPolicy Bypass -Scope Process -Force; cd D:\AUTOPILOT; .\autopilot_post_reset_optimize.ps1 -Root "D:\AUTOPILOT"
