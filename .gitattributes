@@ -1,2 +1,12 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+*          text=auto
+*.ps1      text eol=crlf
+*.cmd      text eol=crlf
+*.bat      text eol=crlf
+*.sh       text eol=lf
+*.py       text eol=lf
+*.js       text eol=lf
+*.ts       text eol=lf
+*.json     text eol=lf
+*.yml      text eol=lf
+*.yaml     text eol=lf
+*.md       text eol=lf
