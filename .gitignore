@@ -21,3 +21,5 @@ secrets/
 *.pem
 Thumbs.db
 desktop.ini
+.venv/
+tests/__pycache__/
