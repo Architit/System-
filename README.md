@@ -13,3 +13,9 @@
 ## Коммиты/пуш
 - LFS включён для: `*.zip *.7z *.rar *.iso *.tar *.gz *.bin`
 - Pre-commit блокирует >100 MB и потенциальные секреты.
+
+## Testing
+- `scripts/test_entrypoint.sh --all`
+- `scripts/test_entrypoint.sh --governance`
+- `scripts/test_entrypoint.sh --gateway`
+- `scripts/test_entrypoint.sh --channel`

@@ -19,6 +19,8 @@ $ErrorActionPreference = "Stop"
 $AutopilotRoot = "C:\ProgramData\Autopilot"
 $BootScript     = Join-Path $AutopilotRoot "autopilot_boot_protocol.ps1"
 $WatchdogScript = Join-Path $AutopilotRoot "autopilot_watchdog.ps1"
+$AessLauncher   = Join-Path $AutopilotRoot "autopilot_aess_wsl_launcher.ps1"
+$AessBootstrap  = Join-Path $AutopilotRoot "aess_bootstrap.sh"
 $LogDir         = Join-Path $AutopilotRoot "logs"
 $LogFile        = Join-Path $LogDir "autopilot_init.log"
 
@@ -57,22 +59,32 @@ function Ensure-Tasks {
 
   Register-ScheduledTask -TaskName "Autopilot-Boot" -Action $actionBoot -Trigger $triggerBoot -Settings $settingsBoot -Principal $principal -Force | Out-Null
 
-  $actionWatch = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoLogo -NoProfile -ExecutionPolicy Bypass -File `"$WatchdogScript`""
-  $triggerWatch = New-ScheduledTaskTrigger -Once (Get-Date).AddMinutes(1)
-  $triggerWatch.Repetition = (New-Object System.Management.Automation.PSObject -Property @{ Interval = (New-TimeSpan -Minutes 5); Duration = ([TimeSpan]::MaxValue) })
-  $settingsWatch = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -MultipleInstances IgnoreNew
+  $watchCmd = "powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File `"$WatchdogScript`""
+  schtasks.exe /Create /TN "Autopilot-Watchdog" /SC MINUTE /MO 5 /RU "SYSTEM" /RL HIGHEST /TR $watchCmd /F | Out-Null
 
-  Register-ScheduledTask -TaskName "Autopilot-Watchdog" -Action $actionWatch -Trigger $triggerWatch -Settings $settingsWatch -Principal $principal -Force | Out-Null
+  # WSL distros are user-scoped; run AESS launcher at user logon.
+  $currentUser = "$env:USERDOMAIN\$env:USERNAME"
+  $principalAess = New-ScheduledTaskPrincipal -UserId $currentUser -LogonType Interactive -RunLevel Highest
+  $actionAess = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoLogo -NoProfile -ExecutionPolicy Bypass -File `"$AessLauncher`""
+  $triggerAess = New-ScheduledTaskTrigger -AtLogOn -User $currentUser
+  $settingsAess = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
+  Register-ScheduledTask -TaskName "Autopilot-AESS-Logon" -Action $actionAess -Trigger $triggerAess -Settings $settingsAess -Principal $principalAess -Force | Out-Null
+
+  Write-Log "Scheduled tasks registered: Autopilot-Boot, Autopilot-Watchdog, Autopilot-AESS-Logon"
 }
 
 function Install-Core {
   Write-Log "Installing Autopilot Core to $AutopilotRoot"
   New-Item -ItemType Directory -Path $AutopilotRoot -Force | Out-Null
 
-  # Copy companion scripts bundled next to this init script
-  $here = Split-Path -Parent $MyInvocation.MyCommand.Path
+  # Copy companion scripts bundled next to this init script.
+  # $MyInvocation.MyCommand.Path may be null in nested function scope;
+  # prefer $PSScriptRoot and fallback to current directory.
+  $here = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
   Copy-Item (Join-Path $here "autopilot_boot_protocol.ps1") $BootScript -Force
   Copy-Item (Join-Path $here "autopilot_watchdog.ps1") $WatchdogScript -Force
+  Copy-Item (Join-Path $here "autopilot_aess_wsl_launcher.ps1") $AessLauncher -Force
+  Copy-Item (Join-Path $here "aess_bootstrap.sh") $AessBootstrap -Force
 
   Ensure-Registry
   Ensure-Tasks
@@ -81,7 +93,7 @@ function Install-Core {
 
 function Uninstall-Core {
   Write-Log "Removing Scheduled Tasks and files..."
-  Get-ScheduledTask -TaskName "Autopilot-Boot","Autopilot-Watchdog" -ErrorAction SilentlyContinue | Unregister-ScheduledTask -Confirm:$false -ErrorAction SilentlyContinue
+  Get-ScheduledTask -TaskName "Autopilot-Boot","Autopilot-Watchdog","Autopilot-AESS-Logon" -ErrorAction SilentlyContinue | Unregister-ScheduledTask -Confirm:$false -ErrorAction SilentlyContinue
   if (Test-Path $AutopilotRoot) { Remove-Item $AutopilotRoot -Recurse -Force -ErrorAction SilentlyContinue }
   Write-Log "Uninstall complete."
 }

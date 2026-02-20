@@ -34,6 +34,22 @@ function Start-Telemetry {
   Log "Heartbeat written."
 }
 
+function Start-AESS {
+  $launcher = Join-Path $Root "autopilot_aess_wsl_launcher.ps1"
+  if (Test-Path $launcher) {
+    Log "Launching AESS bootstrap via WSL."
+    try {
+      Start-Process -FilePath "powershell.exe" -ArgumentList "-NoLogo -NoProfile -ExecutionPolicy Bypass -File `"$launcher`"" -WindowStyle Hidden -Wait
+      Log "AESS bootstrap launcher finished."
+    } catch {
+      Log "AESS bootstrap launcher failed."
+    }
+  } else {
+    Log "AESS bootstrap launcher not found; skipping."
+  }
+}
+
 Wait-Network
 Optimize-Services
 Start-Telemetry
+Start-AESS
