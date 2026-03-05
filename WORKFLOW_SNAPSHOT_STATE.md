@@ -3,10 +3,10 @@
 ## Identity
 repo: System-
 branch: main
-timestamp_utc: 2026-03-05T16:54:00Z
+timestamp_utc: 2026-03-05T17:34:00Z
 
 ## Current pointer
-phase: PHASE_E_OWNER_EXECUTION_DONE
+phase: PHASE_F_OWNER_EXECUTION_DONE
 stage: governance evidence synchronized
 goal:
 - preserve system guard/identity routing governance (Phase A)
@@ -36,6 +36,7 @@ constraints:
 - `scripts/test_entrypoint.sh --memory`
 - `scripts/test_entrypoint.sh --transport`
 - `scripts/test_entrypoint.sh --flow-control`
+- `bash scripts/test_entrypoint.sh --p0-safety`
 - `gov/report/phaseA_t012_closure_2026-03-05.md`
 - `gov/report/phaseB_system_owner_closure_2026-03-05.md`
 - `gov/report/phaseB_system_owner_closure_2026-03-05.sha256`
