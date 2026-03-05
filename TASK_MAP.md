@@ -1,8 +1,8 @@
 # TASK_MAP
 
-last_updated_utc: 2026-03-05T13:20:00Z
+last_updated_utc: 2026-03-05T15:24:00Z
 owner_repo: System-
-scope: master-plan aligned owner tasks (Phase A/B)
+scope: master-plan aligned owner tasks (Phase A/B/C)
 
 | task_id | title | state | owner | notes |
 |---|---|---|---|---|
@@ -11,3 +11,4 @@ scope: master-plan aligned owner tasks (Phase A/B)
 | phaseB_B1 | patch runtime guardrails | COMPLETE | SYS-01 | `devkit/patch.sh` (`--sha256/--task-id/--spec-file`) |
 | phaseB_B2 | patch runtime contract + tests + wiring | COMPLETE | SYS-01 | `contract/PATCH_RUNTIME_CONTRACT_V1.md`, `tests/test_phase_b_patch_runtime_contract.py`, `scripts/test_entrypoint.sh --patch-runtime` |
 | phaseB_closure | Phase B owner closure evidence | COMPLETE | SYS-01 | `gov/report/phaseB_system_owner_closure_2026-03-05.md` |
+| phaseC_C3 | Phase C owner memory wave execution (guard/routing sync) | COMPLETE | SYS-01 | `contract/PHASE_C_MEMORY_GUARD_CONTRACT_V1.md`, `GUARD_HEAL/Plans/PHASEC_MEMORY_GUARD_ROUTING_SYNC_2026-03-05.md`, `gov/report/phaseC_system_wave1_execution_2026-03-05.md` |
