@@ -1,0 +1,14 @@
+from pathlib import Path
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+def test_phase_r_guard_markers() -> None:
+    text = (REPO_ROOT / "contract" / "PHASE_R_RESEARCH_GATE_GUARD_CONTRACT_V1.md").read_text(encoding="utf-8")
+    assert "phase_r_research_gate_guard_contract=ok" in text
+    assert "phase_r_transport_benchmark_matrix=ok" in text
+    assert "phase_r_vector_engine_benchmark_matrix=ok" in text
+    assert "phase_r_wake_on_demand_trigger_guard=ok" in text
+
+def test_research_gate_mode_wiring_exists() -> None:
+    text = (REPO_ROOT / "scripts" / "test_entrypoint.sh").read_text(encoding="utf-8")
+    assert "--research-gate" in text
+    assert "test_phase_r_research_gate_guard_contract.py" in text
