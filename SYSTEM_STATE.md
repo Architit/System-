@@ -1,13 +1,34 @@
-# SYSTEM STATE (SS)
+# SYSTEM STATE — System-
 
-## Identity
-timestamp: 2026-02-12T23:03:24Z
-host: TRIANIUMACORE
-substrate: WSL2
+- timestamp_utc: 2026-03-05T13:20:00Z
+- system_id: SYS-01
+- role: system guard owner (identity/routing guard + runtime contract)
+- status: ACTIVE_READY
+- gate: MASTER_ALIGNMENT = PASS
+- current_phase_focus: PHASE_B_OWNER_CLOSURE_DONE
 
-## Software / Tooling
-os: Ubuntu 24.04.3 LTS
-kernel: Linux 6.6.87.2-microsoft-standard-WSL2
-shell: GNU bash, version 5.2.21(1)-release (x86_64-pc-linux-gnu)
-git: 2.43.0
-python: 3.12.3
+## Canonical Source Chain
+- L0 source: /home/architit/MASTER_ARCHITECTURE_PLAN_V1.md
+- L1 source: /home/architit/LOCAL_INTEGRATION_DELEGATION_PLAN_V1.md
+- L2 source: /home/architit/TASK_SPEC_PACK_PHASE_A_V1.md
+- derivation_mode: MASTER -> LOCAL -> TASK_SPEC
+
+## Phase A (Owner Scope)
+- phaseA_t012_system_guard_identity_routing_sync: DONE
+- closure_evidence: gov/report/phaseA_t012_closure_2026-03-05.md
+
+## Phase B (Owner Scope)
+- patch_runtime_contract: DONE
+- closure_evidence: gov/report/phaseB_system_owner_closure_2026-03-05.md
+- closure_checksum: gov/report/phaseB_system_owner_closure_2026-03-05.sha256
+
+## Required Runtime Markers
+- mandatory args: --sha256, --task-id, --spec-file
+- fail-fast statuses: success, precondition_failed, integrity_mismatch, conflict_detected
+- machine-readable envelope: status=..., error_code=...
+- audit tuple: task_id/spec_hash/artifact_hash/apply_result/commit_ref
+
+## Constraints
+- no_new_agents_or_repos: enforced
+- derivation_only_execution: enforced
+- fail_fast_on_preconditions: enforced
