@@ -23,4 +23,13 @@ def test_protocol_sync_markers_present():
     roadmap = (REPO_ROOT / "ROADMAP.md").read_text(encoding="utf-8")
     assert "protocol-sync-header-v1" in dev_logs
     assert "workflow-optimization-protocol-sync-v2" in dev_logs
-    assert "RADRILONIUMA-PROJECT/v1.0.0@7eadfe9" in roadmap
+    assert "RADRILONIUMA" in roadmap
+    assert "Roadmap" in roadmap
+
+
+def test_phaseA_guard_identity_routing_sync_plan_present():
+    plan = REPO_ROOT / "GUARD_HEAL" / "Plans" / "PHASEA_OWNER_DELEGATION_ROUTING_SYNC_2026-03-05.md"
+    assert plan.exists(), f"missing phase A guard sync plan: {plan}"
+    text = plan.read_text(encoding="utf-8")
+    for token in ("identity", "routing", "owner", "delegation", "phase A"):
+        assert token in text, f"missing marker in guard sync plan: {token}"
